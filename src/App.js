@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import AddContact from "./components/ContactForm/AddContact";
+import ContactsList from "./components/ContactForm/ContactsList";
+import { useState,useEffect } from 'react'
 
-function App() {
+const App = () => {
+  
+  const [contactslist,setContactsList] = useState([]);
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    if (storedContacts) {
+      setContactsList(JSON.parse(storedContacts));
+    }
+  }, []);
+
+  const addContactHandler = (Username, UserEmail) => {
+    setContactsList((prevContactsList) => {
+      const newContact = { name: Username, email: UserEmail, id: Math.random().toString() };
+      const updatedContactsList = [...prevContactsList, newContact];
+      localStorage.setItem('contacts', JSON.stringify(updatedContactsList));
+      return updatedContactsList;
+    });
+  };
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <AddContact onAddContacts = {addContactHandler} />
+      <ContactsList contacts = {contactslist}/>
+    </React.Fragment>
   );
 }
 
